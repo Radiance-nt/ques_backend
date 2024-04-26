@@ -15,7 +15,6 @@ This final section includes open-ended questions that allow you to express in mo
         "content": {
             "question": """### Trust Factors
 Reflecting on the episode, what specific factors influenced your trust in the swarm?""",
-            "answer": ""
         }
     }
     presentation_data.append(trust_factors)
@@ -26,7 +25,6 @@ Reflecting on the episode, what specific factors influenced your trust in the sw
         "content": {
             "question": """### Configuration Impact
 How did the changes in the swarm configuration across different clips affect your level of trust?""",
-            "answer": ""
         }
     }
     presentation_data.append(config_impact)

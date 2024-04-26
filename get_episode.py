@@ -43,7 +43,6 @@ def get_episode(video_paths: List, k=2, index=1):
                 "question": """### Trust Score (for this clip only)
 After watching this clip, please rate your level of trust to the swarm (a higher score indicating greater trust in the swarm).""",
                 "options": ["1", "2", "3", "4", "5"],
-                "answer": "2"
             }
         },
         {
@@ -60,16 +59,14 @@ After watching this clip, please rate your level of trust to the swarm (a higher
                 "question": """### Overall Trust Rating (after all clips)
 Considering the entire episode, rate your overall trust in the swarm’s ability to perform the task effectively (a higher score indicating greater trust in the swarm).""",
                 "options": ["1", "2", "3", "4", "5"],
-                "answer": "3"
             }
         },
         {
             "type": 12,
             "content": {
-                "question": """### Distrust Reason (for this clip only, if a fault or distrust is identified)
+                "question": """### Distrust Reason
 If you identified a fault or tend to distrust the swarm, please explain your reason in short.""",
-                "options": ["1", "2", "3", "4", "5"],
-                "answer": "3"
+                "options": ["Swarm Inconsistent", "Low Compatness", "Potential Collision", "Inexplicable Trajectory"],
             }
         }
     ]

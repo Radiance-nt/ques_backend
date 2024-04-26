@@ -38,6 +38,14 @@ survey_content = [
      "content": {"question": "What is your favorite programming language and why?", "answer": ""}},
 ]
 
+episode_index_num = 0
+
+
+def get_episode_index_num():
+    global episode_index_num
+    episode_index_num += 1
+    return episode_index_num
+
 
 @app.route('/api/get_tutorial_content', methods=['GET'])
 def get_tutorial_content():
@@ -49,7 +57,7 @@ def get_survey_content():
     k = 5
     title = "test"
     video_paths = [f"/video/{title}_{i}" for i in range(k)]
-    return jsonify(get_episode(video_paths, len(video_paths)))
+    return jsonify(get_episode(video_paths, len(video_paths), index=get_episode_index_num()))
 
 
 @app.route('/api/get_general_content', methods=['GET'])
