@@ -19,7 +19,9 @@ This is a simple markdown example:
 [Link](http://a.com)
 """
     content = {"type": TYPE_MARKDOWN, "content": markdown_content}
-    return jsonify(markdown_content)
+    video_path = "/home/radiance/projects/Swarm-Formation/bags/20240426_013605"
+    # content = {"type": TYPE_VIDEO, "content": video_path}
+    return jsonify(content)
 
 
 if __name__ == '__main__':
