@@ -37,17 +37,17 @@ general_content = [
 @app.route('/api/get_tutorial_content', methods=['GET'])
 def get_tutorial_content():
     print("hello")
-    return jsonify([tutorial_content])
+    return jsonify(tutorial_content)
 
 
 @app.route('/api/get_survey_content', methods=['GET'])
 def get_survey_content():
-    return jsonify([survey_content])
+    return jsonify(survey_content)
 
 
 @app.route('/api/get_general_content', methods=['GET'])
 def get_general_content():
-    return jsonify([general_content])
+    return jsonify(general_content)
 
 
 @app.route('/api/get_content', methods=['GET'])
