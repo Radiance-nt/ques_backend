@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -57,6 +57,21 @@ def get_markdown():
     video_path = "/home/radiance/projects/Swarm-Formation/bags/20240426_013605"
     content2 = {"type": TYPE_VIDEO, "content": video_path}
     return jsonify([content1, content2])
+
+
+@app.route('/api/direct', methods=['POST'])
+def direct():
+    data = request.json
+    button_number = data.get('buttonNumber')
+
+    if button_number == 1:
+        return jsonify({"redirectUrl": "/tutorial"})
+    elif button_number == 2:
+        return jsonify({"redirectUrl": "/survey"})
+    elif button_number == 3:
+        return jsonify({"redirectUrl": "/general"})
+    else:
+        return jsonify({"redirectUrl": "/"})
 
 
 if __name__ == '__main__':
