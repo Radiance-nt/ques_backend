@@ -1,35 +1,5 @@
 from typing import List
 
-"""
-1. A Caption of the whole video
-
-2. Evaluation by clips: For each clip:
-
-(1) Video Clip {i}: /video_path
-
-(2) Single Options: {From 1 to 5} with Text explanations:
-'''
-### Trust Score (for this clip only)
-
-After watching this clip, please rate your level of trust to the swarm (a higher score indicating greater trust in the swarm).
-'''
-
-3. Overall Evaluations:
-
-(1) Single Options: {From 1 to 5} with Text explanations:
-'''
-### Trust Score (after all clips)
-Considering the entire episode, rate your overall trust in the swarm’s ability to perform the task effectively (a higher score indicating greater trust in the swarm).
-'''
-
-(2) Cause of Distrust with Text explanations:
-'''
-### Distrust Reason (for this clip only, if a fault or distrust is identified)
-
-'''
-Multiple Options: {Option 1, Option2 ...}
-"""
-
 
 def get_episode(video_paths: List, k=2, index=1):
     presentation_data = [
@@ -65,8 +35,9 @@ Considering the entire episode, rate your overall trust in the swarm’s ability
             "type": 12,
             "content": {
                 "question": """### Distrust Reason
-If you identified a fault or tend to distrust the swarm, please explain your reason in short.""",
-                "options": ["Swarm Inconsistent", "Low Compatness", "Potential Collision", "Inexplicable Trajectory"],
+If watching the episode led you to feel distrust, please briefly describe the reasons.""",
+                "options": ["Swarm Inconsistent", "Low Compatness", "Potential Collision", "Inexplicable Trajectory",
+                            "Task performance Dissatisfaction"],
             }
         }
     ]
@@ -80,9 +51,9 @@ Please carefully observe the video and answer the following questions based on y
 """})
 
     for i in range(k):
-        formatted_content.append({"type": 1, "content": f"#### Episode {index} - {i + 1}"})
+        formatted_content.append({"type": 1, "content": f"#### Episode {index} - Clip {i + 1}"})
         formatted_content.append({"type": 2, "content": video_paths[i]})
-        for j in range(1, 3):
+        for j in range(1, 2):
             formatted_content.append(presentation_data[j])
     formatted_content.append({
         "type": 1,

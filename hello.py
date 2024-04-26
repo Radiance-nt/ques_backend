@@ -1,3 +1,5 @@
+import os.path
+
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from get_episode import get_episode
@@ -6,6 +8,7 @@ from get_general import get_open_question
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 
+k = 5
 TYPE_MARKDOWN = 1
 TYPE_VIDEO = 2
 TYPE_SINGLE_CHOICE = 11
@@ -22,7 +25,7 @@ Welcome to our research initiative at Cognitive Robotics and AI lab (CRAI) withi
 [Tutorial](https://docs.google.com/forms/d/e/1FAIpQLSfnOWGvC3pvSe89fsOHE4kagheAWgB_2WBq0cUpFXZKvLBJeg/viewform)"""},
     # {"type": TYPE_MARKDOWN, "content": "# Tutorial Section 1"},
     # {"type": TYPE_VIDEO, "content": "/test.avi"},
-    # {"type": TYPE_VIDEO, "content": "/test.mp4"},
+    {"type": TYPE_VIDEO, "content": "/test.mp4"},
     # {"type": TYPE_VIDEO, "content": "/bags/20240426_013605/output_airsim_video.mp4"},
     # {"type": TYPE_SINGLE_CHOICE,
     #  "content": {"question": "What is the capital of France?", "options": ["Paris", "London", "Berlin"],
@@ -38,13 +41,23 @@ survey_content = [
      "content": {"question": "What is your favorite programming language and why?", "answer": ""}},
 ]
 
-episode_index_num = 0
+episode_index_num = 1
+video_root_dir = "/videos"
+video_root_dir_real = os.path.join("./vue-markdown-app/public", video_root_dir.lstrip("/"))
 
 
 def get_episode_index_num():
     global episode_index_num
-    episode_index_num += 1
+    # episode_index_num += 1
     return episode_index_num
+
+
+def get_titles_mapping():
+    print(video_root_dir_real)
+    video_files = [f for f in os.listdir(video_root_dir_real) if ".mp4" in f and "__" in f]
+    video_titles = [video_file.split("__")[0] for video_file in video_files]
+    video_titles = set(video_titles)
+    return list(video_titles)
 
 
 @app.route('/api/get_tutorial_content', methods=['GET'])
@@ -54,24 +67,17 @@ def get_tutorial_content():
 
 @app.route('/api/get_survey_content', methods=['GET'])
 def get_survey_content():
-    k = 5
-    title = "test"
-    video_paths = [f"/video/{title}_{i}" for i in range(k)]
-    return jsonify(get_episode(video_paths, len(video_paths), index=get_episode_index_num()))
+    global k
+    episode_index = get_episode_index_num()
+    titles_mapping = get_titles_mapping()
+    title = titles_mapping[episode_index]
+    video_paths = [os.path.join(video_root_dir, f"{title}__{i}.mp4") for i in range(k)]
+    return jsonify(get_episode(video_paths, len(video_paths), index=episode_index))
 
 
 @app.route('/api/get_general_content', methods=['GET'])
 def get_general_content():
     return jsonify(get_open_question())
-
-
-@app.route('/api/get_content', methods=['GET'])
-def get_markdown():
-    markdown_content = """Test get_content API"""
-    content1 = {"type": TYPE_MARKDOWN, "content": markdown_content}
-    video_path = "/bags/20240426_013605/output_airsim_video.mp4"
-    content2 = {"type": TYPE_VIDEO, "content": video_path}
-    return jsonify([content1, content2])
 
 
 @app.route('/api/direct', methods=['POST'])
