@@ -16,12 +16,12 @@ This is a simple markdown example:
 - List item 2
 - List item 3
 
-[Link](http://a.com)
 """
-    content = {"type": TYPE_MARKDOWN, "content": markdown_content}
+    content1 = {"type": TYPE_MARKDOWN, "content": markdown_content}
     video_path = "/home/radiance/projects/Swarm-Formation/bags/20240426_013605"
-    # content = {"type": TYPE_VIDEO, "content": video_path}
-    return jsonify(content)
+    content2 = {"type": TYPE_VIDEO, "content": video_path}
+    # return jsonify([content1, content2])
+    return jsonify(content1)
 
 
 if __name__ == '__main__':
