@@ -36,7 +36,6 @@ video_root_dir_real = os.path.join("./vue-markdown-app/public", video_root_dir.l
 
 def get_episode_index_num():
     global episode_index_num
-    # episode_index_num += 1
     return episode_index_num
 
 
@@ -81,6 +80,16 @@ def direct():
         return jsonify({"redirectUrl": "/general"})
     else:
         return jsonify({"redirectUrl": "/"})
+
+
+@app.route('/api/submit_results', methods=['POST'])
+def submit_results():
+    global episode_index_num
+    data = request.get_json()  # Extract data from POST request
+    print("Received submission data:", data)  # Optionally log the data for debugging
+    episode_index_num += 1
+
+    return jsonify({"success": True, "message": "Results submitted successfully"}), 200
 
 
 if __name__ == '__main__':
