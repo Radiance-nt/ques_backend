@@ -51,8 +51,8 @@ Please carefully observe the video and answer the following questions based on y
 """})
 
     for i in range(k):
-        formatted_content.append({"type": 1, "content": f"#### Episode {index} - Clip {i + 1}"})
-        formatted_content.append({"type": 2, "content": video_paths[i]})
+        formatted_content.append(
+            {"type": 2, "content": {"text": f"### Episode {index} - Clip {i + 1}", "path": video_paths[i]}})
         for j in range(1, 2):
             formatted_content.append(presentation_data[j])
     formatted_content.append({

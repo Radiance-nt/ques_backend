@@ -23,22 +23,10 @@ Welcome to our research initiative at Cognitive Robotics and AI lab (CRAI) withi
 
 #### Please refer to the tutorial linked below:
 [Tutorial](https://docs.google.com/forms/d/e/1FAIpQLSfnOWGvC3pvSe89fsOHE4kagheAWgB_2WBq0cUpFXZKvLBJeg/viewform)"""},
-    # {"type": TYPE_MARKDOWN, "content": "# Tutorial Section 1"},
-    # {"type": TYPE_VIDEO, "content": "/test.avi"},
-    {"type": TYPE_VIDEO, "content": "/test.mp4"},
     # {"type": TYPE_VIDEO, "content": "/bags/20240426_013605/output_airsim_video.mp4"},
     # {"type": TYPE_SINGLE_CHOICE,
     #  "content": {"question": "What is the capital of France?", "options": ["Paris", "London", "Berlin"],
     #              "answer": "Paris"}},
-]
-
-survey_content = [
-    {"type": TYPE_VIDEO, "content": "/bags/20240426_013605/output_airsim_video.mp4"},
-    {"type": TYPE_MULTIPLE_CHOICE, "content": {"question": "Which programming languages do you know?",
-                                               "options": ["Python", "Java", "JavaScript", "C++"],
-                                               "answer": ["Python", "JavaScript"]}},
-    {"type": TYPE_TEXT_INPUT,
-     "content": {"question": "What is your favorite programming language and why?", "answer": ""}},
 ]
 
 episode_index_num = 1
