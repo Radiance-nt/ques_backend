@@ -1,0 +1,26 @@
+from flask import Flask, jsonify
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
+
+TYPE_MARKDOWN = 1
+TYPE_VIDEO = 2
+
+
+@app.route('/api/get_content', methods=['GET'])
+def get_markdown():
+    markdown_content = """# Hello Markdown!
+This is a simple markdown example:
+- List item 1
+- List item 2
+- List item 3
+
+[Link](http://a.com)
+"""
+    content = {"type": TYPE_MARKDOWN, "content": markdown_content}
+    return jsonify(markdown_content)
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
