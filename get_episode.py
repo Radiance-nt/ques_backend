@@ -19,7 +19,7 @@ After watching this clip, please rate your level of trust to the swarm (a higher
             "type": 13,
             "content": {
                 "question": "##### Any additional comments for this clip?",
-                "answer": "Please enter..."
+                "answer": None,
             }
         },
         # 总体评估的示例内容
@@ -29,6 +29,7 @@ After watching this clip, please rate your level of trust to the swarm (a higher
                 "question": """### Overall Trust Rating (after all clips)
 Considering the entire episode, rate your overall trust in the swarm’s ability to perform the task effectively (a higher score indicating greater trust in the swarm).""",
                 "options": ["1", "2", "3", "4", "5"],
+                "answer": None,
             }
         },
         {
@@ -38,6 +39,7 @@ Considering the entire episode, rate your overall trust in the swarm’s ability
 If watching the episode led you to feel distrust, please briefly describe the reasons.""",
                 "options": ["Swarm Inconsistent", "Low Compatness", "Potential Collision", "Inexplicable Trajectory",
                             "Task performance Dissatisfaction"],
+                "answer": [False for i in range(10)],
             }
         }
     ]
