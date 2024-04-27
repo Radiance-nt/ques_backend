@@ -57,6 +57,8 @@ def get_survey_content():
     global k
     episode_index = get_episode_index_num()
     titles_mapping = get_titles_mapping()
+    if episode_index >= len(titles_mapping):
+        return jsonify({"type": TYPE_MARKDOWN, "content": "# Thank you, you've finished all evaluations!"})
     title = titles_mapping[episode_index]
     video_paths = [os.path.join(video_root_dir, f"{title}__{i}.mp4") for i in range(k)]
     return jsonify(get_episode(video_paths, len(video_paths), index=episode_index))

@@ -22,7 +22,6 @@ After watching this clip, please rate your level of trust to the swarm (a higher
                 "answer": None,
             }
         },
-        # 总体评估的示例内容
         {
             "type": 11,
             "content": {
