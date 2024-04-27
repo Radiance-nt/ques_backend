@@ -87,11 +87,20 @@ def direct():
 @app.route('/api/submit_results', methods=['POST'])
 def submit_results():
     global episode_index_num
-    data = request.get_json()  # Extract data from POST request
-    print("Received submission data:", data)  # Optionally log the data for debugging
+    data = request.get_json()
+    print("Received submission data:", data)
     episode_index_num += 1
 
     return jsonify({"success": True, "message": "Results submitted successfully"}), 200
+
+
+@app.route('/api/bubble', methods=['POST'])
+def bubble():
+    global episode_index_num
+    message = f"Survey Finished: {episode_index_num - 1},    Open Question: Unfinished"
+
+    # 返回消息内容
+    return jsonify({"message": message})
 
 
 if __name__ == '__main__':
