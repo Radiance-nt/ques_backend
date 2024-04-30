@@ -4,8 +4,12 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from get_episode import get_episode
 from get_general import get_open_question
+from flask_pymongo import PyMongo
 
 app = Flask(__name__)
+
+app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
+mongo = PyMongo(app)
 CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 
 k = 5
@@ -23,20 +27,10 @@ Welcome to our research initiative at Cognitive Robotics and AI lab (CRAI) withi
 
 #### Please refer to the tutorial linked below:
 [Tutorial](https://docs.google.com/forms/d/e/1FAIpQLSfnOWGvC3pvSe89fsOHE4kagheAWgB_2WBq0cUpFXZKvLBJeg/viewform)"""},
-    # {"type": TYPE_VIDEO, "content": "/bags/20240426_013605/output_airsim_video.mp4"},
-    # {"type": TYPE_SINGLE_CHOICE,
-    #  "content": {"question": "What is the capital of France?", "options": ["Paris", "London", "Berlin"],
-    #              "answer": "Paris"}},
 ]
 
-episode_index_num = 1
 video_root_dir = "/videos"
 video_root_dir_real = os.path.join("./vue-markdown-app/public", video_root_dir.lstrip("/"))
-
-
-def get_episode_index_num():
-    global episode_index_num
-    return episode_index_num
 
 
 def get_titles_mapping():
@@ -47,15 +41,18 @@ def get_titles_mapping():
     return list(video_titles)
 
 
-@app.route('/api/get_tutorial_content', methods=['GET'])
+@app.route('/api/get_tutorial_content', methods=['POST'])
 def get_tutorial_content():
     return jsonify(tutorial_content)
 
 
-@app.route('/api/get_survey_content', methods=['GET'])
+@app.route('/api/get_survey_content', methods=['POST'])
 def get_survey_content():
     global k
-    episode_index = get_episode_index_num()
+    data = request.get_json()
+    username = data.get('username')
+
+    episode_index = get_episode_index_num(username)
     titles_mapping = get_titles_mapping()
     if episode_index >= len(titles_mapping):
         return jsonify({"type": TYPE_MARKDOWN, "content": "# Thank you, you've finished all evaluations!"})
@@ -64,7 +61,7 @@ def get_survey_content():
     return jsonify(get_episode(video_paths, len(video_paths), index=episode_index))
 
 
-@app.route('/api/get_general_content', methods=['GET'])
+@app.route('/api/get_general_content', methods=['POST'])
 def get_general_content():
     return jsonify(get_open_question())
 
@@ -86,21 +83,70 @@ def direct():
 
 @app.route('/api/submit_results', methods=['POST'])
 def submit_results():
-    global episode_index_num
     data = request.get_json()
-    print("Received submission data:", data)
-    episode_index_num += 1
+    username = data.get('username')
+    mode = data.get('username')
+    user_answers = [item for item in data['results'] if
+                    item['type'] in [TYPE_SINGLE_CHOICE, TYPE_MULTIPLE_CHOICE, TYPE_TEXT_INPUT]]
+    if has_user(username):
+        create_user(username)
 
-    return jsonify({"success": True, "message": "Results submitted successfully"}), 200
+    if mode == "/general":
+        err = handle_open_question(user_answers, username)
+    elif mode == "survey":
+        err = handle_survey(user_answers, username)
+    else:
+        err = "Unknown mode"
+    return jsonify({"success": err is not None, "message": err}), 200
 
 
 @app.route('/api/bubble', methods=['POST'])
 def bubble():
-    global episode_index_num
-    message = f"Survey Finished: {episode_index_num - 1},    Open Question: Unfinished"
+    data = request.get_json()
+    username = data.get('username')
+    message = f"Survey Finished: {get_episode_index_num(username)},    Open Question: Unfinished"
 
-    # 返回消息内容
     return jsonify({"message": message})
+
+
+def create_user(username):
+    users = mongo.db.users
+    user_data = {"username": username, "survey": {}, "open_question": {}}
+    result = users.insert_one(user_data)
+    return result.inserted_id
+
+
+def has_user(username):
+    users = mongo.db.users
+    return users.find_one({"username": username}) is not None
+
+
+def handle_open_question(user_answers, username):
+    users = mongo.db.users
+    try:
+        users.update_one({"username": username}, {"$set": {"open_question": user_answers}})
+        return None
+    except Exception as e:
+        return str(e)
+
+
+def handle_survey(user_answers, username):
+    users = mongo.db.users
+    try:
+        users.update_one({"username": username}, {"$set": {"survey": user_answers}})
+        return None
+    except Exception as e:
+        return str(e)
+
+
+def get_episode_index_num(username):
+    users = mongo.db.users
+    if has_user(username):
+        create_user(username)
+    user = users.find_one({"username": username})
+    if user and "survey" in user:
+        return len(user["survey"])
+    return 0
 
 
 if __name__ == '__main__':
