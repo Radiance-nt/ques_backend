@@ -1,4 +1,5 @@
 import os.path
+import random
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -33,7 +34,7 @@ video_root_dir = "/videos"
 video_root_dir_real = os.path.join("./vue-markdown-app/public", video_root_dir.lstrip("/"))
 
 
-def get_titles_mapping():
+def get_all_video_titles():
     print(video_root_dir_real)
     video_files = [f for f in os.listdir(video_root_dir_real) if ".mp4" in f and "__" in f]
     video_titles = [video_file.split("__")[0] for video_file in video_files]
@@ -48,16 +49,24 @@ def get_tutorial_content():
 
 @app.route('/api/get_survey_content', methods=['POST'])
 def get_survey_content():
-    global k
     data = request.get_json()
     username = data.get('username')
-
     episode_index = get_episode_index_num(username)
-    titles_mapping = get_titles_mapping()
-    if episode_index >= len(titles_mapping):
-        return jsonify({"type": TYPE_MARKDOWN, "content": "# Thank you, you've finished all evaluations!"})
-    title = titles_mapping[episode_index]
-    video_paths = [os.path.join(video_root_dir, f"{title}__{i}.mp4") for i in range(k)]
+
+    user_doc = mongo.db.users.find_one({"username": username})
+    next_video = user_doc.get("next_survey", None)
+    if not next_video:
+        all_videos = set(get_all_video_titles())
+        completed_videos = get_completed_episodes(username)
+
+        available_videos = list(all_videos - completed_videos)
+        if not available_videos:
+            return jsonify({"type": TYPE_MARKDOWN, "content": "# Thank you, you've finished all evaluations!"})
+
+        next_video = random.choice(available_videos)
+        mongo.db.users.update_one({"username": username}, {"$set": {"next_survey": next_video}})
+
+    video_paths = [os.path.join(video_root_dir, f"{next_video}__{i}.mp4") for i in range(k)]
     return jsonify(get_episode(video_paths, len(video_paths), index=episode_index))
 
 
@@ -85,18 +94,20 @@ def direct():
 def submit_results():
     data = request.get_json()
     username = data.get('username')
-    mode = data.get('username')
+    mode = data.get('mode')
     user_answers = [item for item in data['results'] if
                     item['type'] in [TYPE_SINGLE_CHOICE, TYPE_MULTIPLE_CHOICE, TYPE_TEXT_INPUT]]
-    if has_user(username):
+    if not has_user(username):
         create_user(username)
 
-    if mode == "/general":
+    if "general" in mode:
         err = handle_open_question(user_answers, username)
-    elif mode == "survey":
+    elif "survey" in mode:
         err = handle_survey(user_answers, username)
     else:
         err = "Unknown mode"
+        return jsonify({"success": err is not None, "message": err}), 500
+
     return jsonify({"success": err is not None, "message": err}), 200
 
 
@@ -104,7 +115,16 @@ def submit_results():
 def bubble():
     data = request.get_json()
     username = data.get('username')
-    message = f"Survey Finished: {get_episode_index_num(username)},    Open Question: Unfinished"
+    if username == "Guest" or username is None:
+        return jsonify({"message": "Please login first to see your status."})
+
+    episode_index = get_episode_index_num(username)
+
+    users = mongo.db.users
+    user = users.find_one({"username": username})
+    open_question_status = "Finished" if user and "open_question" in user and user["open_question"] else "Unfinished"
+
+    message = f"Survey Finished: {episode_index},    Open Question: {open_question_status}"
 
     return jsonify({"message": message})
 
@@ -132,16 +152,30 @@ def handle_open_question(user_answers, username):
 
 def handle_survey(user_answers, username):
     users = mongo.db.users
+    user = users.find_one({"username": username})
+    episode = user.get("next_survey")
+    if not episode:
+        return "No active survey episode"
     try:
-        users.update_one({"username": username}, {"$set": {"survey": user_answers}})
+        users.update_one({"username": username}, {"$addToSet": {f"survey.{episode}": user_answers}})
+        mongo.db.users.update_one({"username": username}, {"$set": {"next_survey": None}})
         return None
     except Exception as e:
         return str(e)
 
 
+# Retrieve the number of completed episodes
+def get_completed_episodes(username):
+    users = mongo.db.users
+    user = users.find_one({"username": username})
+    if user and "survey" in user:
+        return set(user["survey"].keys())
+    return set()
+
+
 def get_episode_index_num(username):
     users = mongo.db.users
-    if has_user(username):
+    if not has_user(username):
         create_user(username)
     user = users.find_one({"username": username})
     if user and "survey" in user:
