@@ -72,7 +72,23 @@ def get_survey_content():
 
 @app.route('/api/get_general_content', methods=['POST'])
 def get_general_content():
-    return jsonify(get_open_question())
+    data = request.get_json()
+    username = data.get('username')
+    open_questions = get_open_question()
+    _ = get_episode_index_num(username)
+    users = mongo.db.users
+    user = users.find_one({"username": username})
+    if user and "open_question" in user and user["open_question"]:
+        user_answers = user["open_question"]
+        for question in open_questions:
+            if question['type'] in [TYPE_SINGLE_CHOICE, TYPE_MULTIPLE_CHOICE, TYPE_TEXT_INPUT]:
+                if 'question' in question['content']:
+                    question_text = question['content']['question']
+                    for answer in user_answers:
+                        if answer['content']['question'] == question_text:
+                            question['content']['answer'] = answer['content'].get('answer', '')
+
+    return jsonify(open_questions)
 
 
 @app.route('/api/direct', methods=['POST'])

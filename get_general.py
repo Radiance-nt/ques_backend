@@ -6,6 +6,7 @@ def get_open_question():
         "type": 1,
         "content": """## Open Questions
 This final section includes open-ended questions that allow you to express in more detail your thoughts about the factors influencing your trust in the swarm and the impact of different configurations.
+### Your answer will be saved after submitting, and you can always modify your answers after submitting.
 """, }
     presentation_data.append(text_description)
 
