@@ -45,7 +45,7 @@ If watching the episode led you to feel distrust, please briefly describe the re
     assert len(video_paths) == k
     formatted_content = []
 
-    formatted_content.append({"type": 1, "content": f"""### Evaluations by Clips on Episode {index}
+    formatted_content.append({"type": 1, "content": f"""### Evaluations by Clips on Episode {index + 1}
 In the videos, the UAV swarm was deployed for search and rescue operations.
 
 Please carefully observe the video and answer the following questions based on your observations of the swarm's search and rescue activities. Feel free to replay the video as needed for validation.
@@ -53,12 +53,12 @@ Please carefully observe the video and answer the following questions based on y
 
     for i in range(k):
         formatted_content.append(
-            {"type": 2, "content": {"text": f"### Episode {index} - Clip {i + 1}", "path": video_paths[i]}})
+            {"type": 2, "content": {"text": f"### Episode {index + 1} - Clip {i + 1}", "path": video_paths[i]}})
         for j in range(1, 2):
             formatted_content.append(presentation_data[j])
     formatted_content.append({
         "type": 1,
-        "content": f"""### Overall Evaluations on Episode {index}
+        "content": f"""### Overall Evaluations on Episode {index + 1}
 After watching all clips of an episode, this section asks for your overall impressions and trust rating for the entire episode. """}, )
     formatted_content.extend(presentation_data[-2:])
     print(formatted_content)
