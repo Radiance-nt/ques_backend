@@ -19,8 +19,8 @@ TYPE_VIDEO = 2
 TYPE_SINGLE_CHOICE = 11
 TYPE_MULTIPLE_CHOICE = 12
 TYPE_TEXT_INPUT = 13
+TYPE_SUBMIT_BUTTON = 99
 
-# 测试数据
 tutorial_content = [
     {"type": TYPE_MARKDOWN, "content": "# Questionnaire -- Trust Transfer Study in Human-Swarm Interaction"},
     {"type": TYPE_MARKDOWN, "content": """### Project Instruction
@@ -67,7 +67,9 @@ def get_survey_content():
         mongo.db.users.update_one({"username": username}, {"$set": {"next_survey": next_video}})
 
     video_paths = [os.path.join(video_root_dir, f"{next_video}__{i}.mp4") for i in range(k)]
-    return jsonify(get_episode(video_paths, len(video_paths), index=episode_index))
+    results = get_episode(video_paths, len(video_paths), index=episode_index)
+    results.append({"type": TYPE_SUBMIT_BUTTON, "content": "Submit Results"})
+    return jsonify(results)
 
 
 @app.route('/api/get_general_content', methods=['POST'])
@@ -87,7 +89,7 @@ def get_general_content():
                     for answer in user_answers:
                         if answer['content']['question'] == question_text:
                             question['content']['answer'] = answer['content'].get('answer', '')
-
+    open_questions.append({"type": TYPE_SUBMIT_BUTTON, "content": "Submit Results"})
     return jsonify(open_questions)
 
 
