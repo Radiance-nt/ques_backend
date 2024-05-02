@@ -9,9 +9,9 @@ from flask_pymongo import PyMongo
 
 app = Flask(__name__)
 
-app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
+app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/myDatabase")
 mongo = PyMongo(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
+CORS(app, resources={r"/*": {"origins": "https://ques-frontend-mluiey8ip-yanlin-lius-projects.vercel.app/"}})
 
 k = 5
 TYPE_MARKDOWN = 1
