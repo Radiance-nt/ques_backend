@@ -28,6 +28,7 @@ Welcome to our research initiative at Cognitive Robotics and AI lab (CRAI) withi
 
 #### Please refer to the tutorial linked below:
 [Tutorial](https://docs.google.com/forms/d/e/1FAIpQLSfnOWGvC3pvSe89fsOHE4kagheAWgB_2WBq0cUpFXZKvLBJeg/viewform)"""},
+    {"type": TYPE_MARKDOWN, "content": "### Please make sure you have entered your e-mail in the questionnaire above, otherwise your answer will be not recorded as valid."},
 ]
 
 video_root_dir = "/videos"

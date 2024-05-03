@@ -36,7 +36,7 @@ Considering the entire episode, rate your overall trust in the swarm’s ability
             "content": {
                 "question": """### Distrust Reason
 If watching the episode led you to feel distrust, please briefly describe the reasons.""",
-                "options": ["Swarm Inconsistent", "Low Compatness", "Potential Collision", "Inexplicable Trajectory",
+                "options": ["Swarm Inconsistent", "Low Compactness", "Potential Collision", "Inexplicable Trajectory",
                             "Task performance Dissatisfaction"],
                 "answer": [False for i in range(10)],
             }
